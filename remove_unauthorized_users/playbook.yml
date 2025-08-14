@@ -1,0 +1,50 @@
+---
+- name: user management
+  hosts: all
+  become: yes
+  tasks:
+  #Creating the allowed user in the servers if not there using idempotent nature of ansible
+    - name: create user 
+      user:
+        name: "{{ item }}"
+        state: present
+        shell: /bin/bash
+      loop: "{{ allowed_list }}"
+
+#Assigning SSH keys to the created users
+    - name: Assign ssh key to users
+      authorized_key:
+        user: "{{ item }}"
+        state: present
+        key: "{{ lookup('file', '.ssh_key/id_rsa.pub') }}"          #looking up for the SSH key 
+      loop: "{{ allowed_list }}"
+
+#Extracting the list of all the normal users
+    - name:  Getting list of all  users
+      shell: |
+        awk -F ':' '$3 > 1000 && $1 != "nobody" && $1 != "ec2_user" {print $1}' /etc/passwd
+      register: current_user
+      changed_when: false
+
+# task to display all the normal users in the server
+    - name: debug
+      debug:
+        msg: "{{ current_user.stdout_lines }}"  #Displaying the list of current users
+
+    - name: users to remove
+      set_fact:
+ #Extracting the unauthorized users by comparing allowed list of users with total list of normal users
+        unauthorized_users: "{{ current_user.stdout_lines | difference(allowed_list) }}"  
+
+#task to display the unauthorized users going to be remove
+    - name: debug
+      debug:
+         msg: "{{ unauthorized_users }}"             #listing the unauthorized users
+
+#deleting the unauthorized user
+    - name: removing unauthorized users
+      user:
+        name: "{{ item }}"
+        state: absent
+      loop: "{{ unauthorized_users }}"
+

@@ -1,0 +1,4 @@
+allowed_list:                                     
+#allowed list of users in app server
+  - app1
+  - app2

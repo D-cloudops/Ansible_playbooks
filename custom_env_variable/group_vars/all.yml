@@ -1,0 +1,5 @@
+#Declare the environment variables
+env_vars:
+  JAVA_HOME: "usr/lib/jvm"
+  APP_ENV: "production"
+  APP_DEBUG: "false"

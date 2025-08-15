@@ -1,0 +1,26 @@
+---
+- name: configuring env variables
+  hosts: localhost
+  become: yes
+  tasks:
+  #creating the custom environment variable  script file under directory /etc/profile.d
+    - name: creating env varible file
+      file:
+        path: /etc/profile.d/custom_env.sh
+        state: touch
+        mode: '0644'
+
+#Updating the above created file with environment variables
+    - name: entrying the env variable in variable file
+      lineinfile:
+        path: /etc/profile.d/custom_env.sh
+        line: 'export {{item.key}}={{item.value}}'
+        state: present
+        regexp: '^export {{item.key}}='                ##using regexp to update the env variabe if already there 
+      loop: "{{ env_vars | dict2items }}"              ##using dic2items to pass the dictionary as list loop
+      notify: reload environment
+
+#setting environment variable
+  handlers:
+    - name: reload environment
+      shell: source /etc/profile.d/custom_env.sh

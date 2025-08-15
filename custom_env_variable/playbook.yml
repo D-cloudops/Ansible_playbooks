@@ -1,6 +1,6 @@
 ---
 - name: configuring env variables
-  hosts: localhost
+  hosts: all
   become: yes
   tasks:
   #creating the custom environment variable  script file under directory /etc/profile.d

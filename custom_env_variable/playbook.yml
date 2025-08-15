@@ -18,9 +18,8 @@
         state: present
         regexp: '^export {{item.key}}='                ##using regexp to update the env variabe if already there 
       loop: "{{ env_vars | dict2items }}"              ##using dic2items to pass the dictionary as list loop
-      notify: reload environment
 
-#setting environment variable
-  handlers:
-    - name: reload environment
+    - name: loading environment variables
       shell: source /etc/profile.d/custom_env.sh
+      args:
+        executable: /bin/bash

@@ -11,14 +11,6 @@
         shell: /bin/bash
       loop: "{{ allowed_list }}"
 
-#Assigning SSH keys to the created users
-    - name: Assign ssh key to users
-      authorized_key:
-        user: "{{ item }}"
-        state: present
-        key: "{{ lookup('file', '.ssh_key/id_rsa.pub') }}"          #looking up for the SSH key 
-      loop: "{{ allowed_list }}"
-
 #Extracting the list of all the normal users
     - name:  Getting list of all  users
       shell: |

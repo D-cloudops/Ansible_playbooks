@@ -1,5 +1,6 @@
 ### Removing the unauthorized users from the server
 
+
 ## Description
 
 The playbook will check and create the allowed users passed by variable in {allowed_list} if not present
